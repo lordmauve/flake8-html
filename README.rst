@@ -33,6 +33,25 @@ Then run flake8 passing the ``--format=html`` option and a ``--htmldir``:
    $ flake8 --format=html --htmldir=flake-report
 
 
+Screenshots
+-----------
+
+Report index page:
+
+.. image:: https://github.com/lordmauve/flake8-html
+           /raw/master/screenshots/report-index.png
+
+Per-file report, grouped by error code:
+
+.. image:: https://github.com/lordmauve/flake8-html
+           /raw/master/screenshots/file-report.png
+
+Annotated, syntax-highlighed source code:
+
+.. image:: https://github.com/lordmauve/flake8-html
+           /raw/master/screenshots/annotated-source.png
+
+
 License
 -------
 
