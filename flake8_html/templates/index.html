@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+   <head>
+      <title>flake8 violations report</title>
+      <meta http-equiv="Content-Type" value="text/html; charset=UTF-8">
+      <link rel="stylesheet" href="styles.css">
+   </head>
+   <body>
+      <div id="masthead" class="sev-{{ highest_sev }}"></div>
+      <div id="page">
+         <h1>flake8 violations</h1>
+         <p id="versions">Generated on {{ now.strftime('%Y-%m-%d %H:%M') }}
+            with {{ versions }}
+         </p>
+         <ul id="index">
+         {% for e in index %}
+         <li>
+            <a href="{{ e.report_name }}">
+               <span class="count sev-{{ e.highest_sev }}">
+                  {{ e.error_count }}
+               </span>
+               {{ e.filename }}
+            </a>
+         </li>
+         {% else %}
+         <li>
+            <div id="all-good">
+               <span class="count sev-4">
+                  <span class="tick">&#x2713;</span>
+               </span>
+               <h2>All good!</h2>
+               <p>No flake8 errors found in {{ file_count }} files scanned.</p>
+            </div>
+         </li>
+         {% endfor %}
+         </ul>
+      </div>
+   </body>
+</html>
