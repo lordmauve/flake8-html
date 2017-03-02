@@ -9,10 +9,6 @@ flake8-html
 .. image:: https://img.shields.io/travis/lordmauve/flake8-html.svg
         :target: https://travis-ci.org/lordmauve/flake8-html
 
-.. image:: https://readthedocs.org/projects/flake8-html/badge/?version=latest
-        :target: https://flake8-html.readthedocs.io/en/latest/?badge=latest
-        :alt: Documentation Status
-
 .. image:: https://pyup.io/repos/github/lordmauve/flake8-html/shield.svg
      :target: https://pyup.io/repos/github/lordmauve/flake8-html/
      :alt: Updates
