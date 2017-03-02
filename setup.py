@@ -23,7 +23,7 @@ test_requirements = [
 
 setup(
     name='flake8-html',
-    version='0.1.0',
+    version='0.1.1',
     description="Generate HTML reports of flake8 violations",
     long_description=readme + '\n\n' + history,
     author="Daniel Pope",
