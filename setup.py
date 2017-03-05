@@ -28,7 +28,7 @@ setup(
     long_description=readme + '\n\n' + history,
     author="Daniel Pope",
     author_email='mauve@mauveweb.co.uk',
-    url='https://github.com/lordmauve/flake8_html',
+    url='https://github.com/lordmauve/flake8-html',
     packages=[
         'flake8_html',
     ],
