@@ -26,6 +26,7 @@ from jinja2 import Environment, PackageLoader, Markup
 jinja2_env = Environment(
     loader=PackageLoader('flake8_html')
 )
+jinja2_env.filters['sentence'] = lambda s: s[:1].upper() + s[1:]
 
 
 #: A sequence of error code prefixes
@@ -121,10 +122,15 @@ class HTMLPlugin(base.BaseFormatter):
         counts = Counter()
         for code, errors in self.by_code.items():
             sev = find_severity(code)
-            counts[sev] += 1
+            counts[sev] += len(errors)
             e = min(errors, key=attrgetter('line_number'))
             unique_messages = len({e.text for e in errors})
-            errs = sorted((e.line_number, e.text) for e in errors)
+
+            errcounts = Counter((e.line_number, e.text) for e in errors)
+            errs = sorted(
+                (line, text, count)
+                for (line, text), count in errcounts.items()
+            )
             index.append((
                 sev,
                 len(errors),
@@ -132,9 +138,10 @@ class HTMLPlugin(base.BaseFormatter):
                 e.text,
                 e.line_number,
                 unique_messages,
+                unique_messages > 1 or any(e[2] > 1 for e in errs),
                 errs
             ))
-        index.sort(key=lambda r: (r[0], -r[1], r[2]))
+        index.sort(key=lambda r: (r[0],-r[1],r[2]))
 
         scores = []
         for sev, count in sorted(counts.items()):
@@ -144,13 +151,15 @@ class HTMLPlugin(base.BaseFormatter):
         print(orig_filename, "has issues:", *scores)
 
         # Build a mapping of errors by line
-        by_line = defaultdict(list)
+        by_line = defaultdict(Counter)
         for error, sev in self.errors:
-            by_line[error.line_number].append((error, sev))
+            line_errors = by_line[error.line_number]
+            line_errors[sev, error.code, error.text] += 1
+
         # Build a table of severities by line
         line_sevs = {}
         for line, errs in by_line.items():
-            line_sevs[line] = min(e[1] for e in errs)
+            line_sevs[line] = min(e[0] for e in errs)
 
         params = self._format_source(source)
         params.update(

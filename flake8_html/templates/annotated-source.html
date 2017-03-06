@@ -22,12 +22,14 @@
                class="code sev-{{ line_sev }} {% if line_errors %} le{% endif %}">
                {%- if line_errors %}
                <ul class="violations">
-               {% for e, sev in line_errors %}
+               {% for (sev, code, text), count in line_errors.items() %}
                   <li>
                      <span class="count sev-{{ sev }}">
-                        {{ e.code }}
+                        {{ code }}
                      </span>
-                     {{ e.text }}</li>
+                     {{ text|sentence }}
+                     {%- if count > 1 %} (in {{ count }} places){% endif -%}
+                  </li>
                {% endfor %}
                </ul>
                {%- endif -%}

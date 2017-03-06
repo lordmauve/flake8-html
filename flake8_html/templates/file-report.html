@@ -45,7 +45,7 @@ window.addEventListener('DOMContentLoaded', function () {
          </h1>
 
          <ul id="index">
-         {% for sev, count, code, text, line, msg_count, errs in index %}
+         {% for sev, count, code, text, line, msg_count, expand, errs in index %}
          <li>
             <a data-code="{{ code }}">
                <span class="count sev-{{ sev }}">
@@ -57,10 +57,10 @@ window.addEventListener('DOMContentLoaded', function () {
                {% endif %}
             </a>
             <ul class="details">
-            {% for lineno, etext in errs -%}
+            {% for lineno, etext, count in errs -%}
             <li>
-               {% if msg_count > 1 %}
-               <p>{{etext}}</p>
+               {% if expand %}
+               <p>{{etext|sentence}}{% if count > 1 %} (in {{ count }} places){% endif %}:</p>
                {% endif %}
                <a href="{{ source_filename }}#l{{ lineno }}">
                   <tt><i>{{lineno}}</i> {{ html_lines[lineno - 1] or '&nbsp;'|safe }}</tt>
