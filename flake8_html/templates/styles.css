@@ -12,7 +12,7 @@ html {
 }
 
 h1, h2 {
-   font-family: Trebuchet MS, sans-serif;
+   font-family: sans-serif;
    font-weight: normal;
 }
 
@@ -20,6 +20,10 @@ h1 {
    color: white;
    font-size: 36px;
    margin-top: 1em;
+}
+
+h1 img {
+   margin-right: 0.3em;
 }
 
 h2 {
@@ -31,7 +35,7 @@ h1 a {
 }
 
 #versions {
-   color: white;
+   color: rgba(255, 255, 255, 0.7);
 }
 
 #page {
@@ -240,6 +244,11 @@ ul.details {
 }
 .le.sev-3 {
    background-color: #adf;
+}
+
+img {
+   height: 1.2em;
+   vertical-align: -0.35em;
 }
 
 {{ pygments_css }}

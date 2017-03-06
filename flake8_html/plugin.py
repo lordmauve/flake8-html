@@ -12,6 +12,7 @@ import os
 import os.path
 import codecs
 import datetime
+import pkgutil
 from operator import attrgetter
 from collections import namedtuple, Counter
 
@@ -141,7 +142,7 @@ class HTMLPlugin(base.BaseFormatter):
                 unique_messages > 1 or any(e[2] > 1 for e in errs),
                 errs
             ))
-        index.sort(key=lambda r: (r[0],-r[1],r[2]))
+        index.sort(key=lambda r: (r[0], -r[1], r[2]))
 
         scores = []
         for sev, count in sorted(counts.items()):
@@ -204,7 +205,16 @@ class HTMLPlugin(base.BaseFormatter):
     def stop(self):
         """After the flake8 run, write the stylesheet and index."""
         self.write_styles()
+        self.write_images()
         self.write_index()
+
+    def write_images(self):
+        """Write the SVG images."""
+        for path in ('file.svg', 'back.svg'):
+            source = pkgutil.get_data('flake8_html', 'images/' + path)
+            outpath = os.path.join(self.outdir, path)
+            with open(outpath, 'wb') as f:
+                f.write(source)
 
     def write_styles(self):
         """Write the stylesheet."""
