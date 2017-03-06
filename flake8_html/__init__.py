@@ -3,7 +3,7 @@
 
 __author__ = """Daniel Pope"""
 __email__ = 'mauve@mauveweb.co.uk'
-__version__ = '0.1.1'
+__version__ = '0.2.0'
 
 
 from .plugin import HTMLPlugin
