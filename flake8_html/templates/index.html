@@ -1,14 +1,14 @@
 <!DOCTYPE html>
 <html>
    <head>
-      <title>flake8 violations report</title>
+      <title>{{ title }}</title>
       <meta http-equiv="Content-Type" value="text/html; charset=UTF-8">
       <link rel="stylesheet" href="styles.css">
    </head>
    <body>
       <div id="masthead" class="sev-{{ highest_sev }}"></div>
       <div id="page">
-         <h1>flake8 violations</h1>
+          <h1>{{ title }}</h1>
          <p id="versions">Generated on {{ now.strftime('%Y-%m-%d %H:%M') }}
             with {{ versions }}
          </p>

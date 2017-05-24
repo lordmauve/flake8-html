@@ -170,7 +170,8 @@ class HTMLPlugin(base.BaseFormatter):
             errors=by_line,
             line_sevs=line_sevs,
             highest_sev=highest_sev,
-            index=index
+            index=index,
+            title=self.options.htmltitle,
         )
         rendered = self.report_template.render(**params)
         with codecs.open(report_filename, 'w', encoding='utf8') as f:
@@ -243,7 +244,8 @@ class HTMLPlugin(base.BaseFormatter):
             ),
             now=datetime.datetime.now(),
             versions=self.option_manager.generate_versions(),
-            highest_sev=highest_sev
+            highest_sev=highest_sev,
+            title=self.options.htmltitle,
         )
         indexfile = os.path.join(self.outdir, 'index.html')
         with codecs.open(indexfile, 'w', encoding='utf8') as f:
@@ -255,5 +257,10 @@ class HTMLPlugin(base.BaseFormatter):
         cls.option_manager = options
         options.add_option(
             '--htmldir',
-            help="Directory in which to write HTML output."
+            help="Directory in which to write HTML output.",
+        )
+        options.add_option(
+            '--htmltitle',
+            help="Title to display in HTML documentation",
+            default="flake8 violations"
         )
