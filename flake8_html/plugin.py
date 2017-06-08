@@ -188,6 +188,8 @@ class HTMLPlugin(base.BaseFormatter):
         with codecs.open(source_filename, 'w', encoding='utf8') as f:
             f.write(rendered)
 
+        self.stop()
+
     def get_report_filename(self, filename, suffix=''):
         """Generate a path in the output directory for the source file given.
 
