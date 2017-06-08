@@ -13,6 +13,8 @@ import os.path
 import codecs
 import datetime
 import pkgutil
+import ConfigParser
+
 from operator import attrgetter
 from collections import namedtuple, Counter
 
@@ -29,6 +31,8 @@ jinja2_env = Environment(
 )
 jinja2_env.filters['sentence'] = lambda s: s[:1].upper() + s[1:]
 
+config = ConfigParser.RawConfigParser()
+config.read('setup.cfg')
 
 #: A sequence of error code prefixes
 #:
@@ -72,8 +76,12 @@ class HTMLPlugin(base.BaseFormatter):
         self.report_template = jinja2_env.get_template('file-report.html')
         self.source_template = jinja2_env.get_template('annotated-source.html')
         if not self.options.htmldir:
-            sys.exit('--htmldir must be given if HTML output is enabled')
-        self.outdir = self.options.htmldir
+            try:
+                self.outdir = config.get('flake8', 'htmldir')
+            except:
+                sys.exit('--htmldir must be given if HTML output is enabled')
+        else:
+            self.outdir = self.options.htmldir
         if not os.path.isdir(self.outdir):
             os.mkdir(self.outdir)
         self.files = []
