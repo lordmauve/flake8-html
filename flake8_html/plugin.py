@@ -266,6 +266,7 @@ class HTMLPlugin(base.BaseFormatter):
         options.add_option(
             '--htmldir',
             help="Directory in which to write HTML output.",
+            default="reports/flake-report"
         )
         options.add_option(
             '--htmltitle',
