@@ -115,7 +115,7 @@ class HTMLPlugin(base.BaseFormatter):
         with open(filename, 'rb') as f:
             source = f.read()
 
-        orig_filename = filename
+        # orig_filename = filename
         filename = re.sub(r'^\./', '', filename)
 
         highest_sev = min(sev for e, sev in self.errors)
@@ -150,6 +150,14 @@ class HTMLPlugin(base.BaseFormatter):
                 unique_messages > 1 or any(e[2] > 1 for e in errs),
                 errs
             ))
+            for err in errors:
+                line = unicode(  # NOQA
+                    err.physical_line.strip('\n').strip(' '), 'utf8'
+                ).encode('ascii', 'ignore')
+                print('%s:%d:%d %s %s' % (
+                    err.filename, err.line_number, err.column_number,
+                    line, err.text
+                ))
         index.sort(key=lambda r: (r[0], -r[1], r[2]))
 
         scores = []
@@ -157,7 +165,7 @@ class HTMLPlugin(base.BaseFormatter):
             scores.append(
                 '%s: %d' % (SEVERITY_NAMES[sev - 1], count)
             )
-        print(orig_filename, "has issues:", *scores)
+        # print(orig_filename, "has issues:", *scores)
 
         # Build a mapping of errors by line
         by_line = defaultdict(Counter)
