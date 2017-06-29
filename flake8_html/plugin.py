@@ -69,6 +69,7 @@ IndexEntry = namedtuple(
 
 class HTMLPlugin(base.BaseFormatter):
     """A plugin for flake8 to render errors as HTML reports."""
+
     def after_init(self):
         """Configure the plugin run."""
         self.report_template = jinja2_env.get_template('file-report.html')
@@ -209,7 +210,7 @@ class HTMLPlugin(base.BaseFormatter):
         rendered = self.source_template.render(**params)
         with codecs.open(source_filename, 'w', encoding='utf8') as f:
             f.write(rendered)
-
+        # stop() isn't called when, f.ex. called via some CI runners, so call it
         self.stop()
 
     def get_report_filename(self, filename, suffix=''):
@@ -289,8 +290,7 @@ class HTMLPlugin(base.BaseFormatter):
         cls.option_manager = options
         options.add_option(
             '--htmldir',
-            help="Directory in which to write HTML output.",
-            default="reports/flake-report"
+            help="Directory in which to write HTML output."
         )
         options.add_option(
             '--htmltitle',
