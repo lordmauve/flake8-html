@@ -82,6 +82,15 @@ class HTMLPlugin(base.BaseFormatter):
                 sys.exit('--htmldir must be given if HTML output is enabled')
         else:
             self.outdir = self.options.htmldir
+
+        if not self.options.pylintreport:
+            try:
+                self.pylintreport = config.get('flake8', 'html_pylint')
+            except:
+                self.pylintreport = False
+        else:
+            self.pylintreport = self.options.pylintreport
+
         if not os.path.isdir(self.outdir):
             os.mkdir(self.outdir)
         self.files = []
@@ -114,8 +123,8 @@ class HTMLPlugin(base.BaseFormatter):
 
         with open(filename, 'rb') as f:
             source = f.read()
-
-        # orig_filename = filename
+        if not self.pylintreport:
+            orig_filename = filename
         filename = re.sub(r'^\./', '', filename)
 
         highest_sev = min(sev for e, sev in self.errors)
@@ -129,6 +138,7 @@ class HTMLPlugin(base.BaseFormatter):
         # Build an index of errors by code/description
         index = []
         counts = Counter()
+        pep8_report_errs = []
         for code, errors in self.by_code.items():
             sev = find_severity(code)
             counts[sev] += len(errors)
@@ -150,11 +160,19 @@ class HTMLPlugin(base.BaseFormatter):
                 unique_messages > 1 or any(e[2] > 1 for e in errs),
                 errs
             ))
-            for err in errors:
-                print('%s:%d:%d: %s %s' % (
-                    err.filename, err.line_number, err.column_number,
-                    err.code, err.text
-                ))
+            if self.pylintreport:
+                perrs = []
+                for err in errors:
+                    perrs.append(
+                        (
+                            err.filename, err.line_number, err.column_number,
+                            err.code, err.text
+                        ))
+                pep8_report_errs.extend(perrs)
+        if self.pylintreport:
+            pep8_report_errs.sort(key=lambda err: (err[0], err[1], err[2]))
+            for e in pep8_report_errs:
+                print("%s:%d:%d: %s %s" % e)
         index.sort(key=lambda r: (r[0], -r[1], r[2]))
 
         scores = []
@@ -162,7 +180,8 @@ class HTMLPlugin(base.BaseFormatter):
             scores.append(
                 '%s: %d' % (SEVERITY_NAMES[sev - 1], count)
             )
-        # print(orig_filename, "has issues:", *scores)
+        if not self.pylintreport:
+            print(orig_filename, "has issues:", *scores)
 
         # Build a mapping of errors by line
         by_line = defaultdict(Counter)
@@ -279,4 +298,9 @@ class HTMLPlugin(base.BaseFormatter):
             '--htmltitle',
             help="Title to display in HTML documentation",
             default="flake8 violations"
+        )
+        options.add_option(
+            '--pylintreport',
+            help="Whether to create a pylint report instead of the standard one",
+            default=False
         )
