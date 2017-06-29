@@ -151,7 +151,7 @@ class HTMLPlugin(base.BaseFormatter):
                 errs
             ))
             for err in errors:
-                print('%s:%d:%d %s %s' % (
+                print('%s:%d:%d: %s %s' % (
                     err.filename, err.line_number, err.column_number,
                     err.code, err.text
                 ))
