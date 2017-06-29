@@ -151,12 +151,9 @@ class HTMLPlugin(base.BaseFormatter):
                 errs
             ))
             for err in errors:
-                line = unicode(  # NOQA
-                    err.physical_line.strip('\n').strip(' '), 'utf8'
-                ).encode('ascii', 'ignore')
                 print('%s:%d:%d %s %s' % (
                     err.filename, err.line_number, err.column_number,
-                    line, err.text
+                    err.code, err.text
                 ))
         index.sort(key=lambda r: (r[0], -r[1], r[2]))
 
