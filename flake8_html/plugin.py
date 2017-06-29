@@ -299,6 +299,6 @@ class HTMLPlugin(base.BaseFormatter):
         )
         options.add_option(
             '--htmlpep8',
-            help="Whether to create a pep8 report instead of the standard one",
+            help="Whether to print a pep8 report instead of the standard one",
             default=False
         )
