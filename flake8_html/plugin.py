@@ -32,8 +32,7 @@ jinja2_env = Environment(
 jinja2_env.filters['sentence'] = lambda s: s[:1].upper() + s[1:]
 
 config = ConfigParser.RawConfigParser()
-config.read('setup.cfg')
-
+config.read(['setup.cfg', 'tox.ini', '.flake8'])
 #: A sequence of error code prefixes
 #:
 #: The first matching prefix determines the severity
@@ -70,7 +69,6 @@ IndexEntry = namedtuple(
 
 class HTMLPlugin(base.BaseFormatter):
     """A plugin for flake8 to render errors as HTML reports."""
-
     def after_init(self):
         """Configure the plugin run."""
         self.report_template = jinja2_env.get_template('file-report.html')
