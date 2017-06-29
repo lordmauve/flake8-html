@@ -82,13 +82,13 @@ class HTMLPlugin(base.BaseFormatter):
         else:
             self.outdir = self.options.htmldir
 
-        if not self.options.htmlpylint:
+        if not self.options.htmlpep8:
             try:
-                self.pylintreport = config.get('flake8', 'htmlpylint')
+                self.pep8report = config.get('flake8', 'htmlpep8')
             except:
-                self.pylintreport = False
+                self.pep8report = False
         else:
-            self.pylintreport = self.options.htmlpylint
+            self.pep8report = self.options.htmlpep8
 
         if not os.path.isdir(self.outdir):
             os.mkdir(self.outdir)
@@ -122,7 +122,7 @@ class HTMLPlugin(base.BaseFormatter):
 
         with open(filename, 'rb') as f:
             source = f.read()
-        if not self.pylintreport:
+        if not self.pep8report:
             orig_filename = filename
         filename = re.sub(r'^\./', '', filename)
 
@@ -159,7 +159,7 @@ class HTMLPlugin(base.BaseFormatter):
                 unique_messages > 1 or any(e[2] > 1 for e in errs),
                 errs
             ))
-            if self.pylintreport:
+            if self.pep8report:
                 perrs = []
                 for err in errors:
                     perrs.append(
@@ -168,7 +168,7 @@ class HTMLPlugin(base.BaseFormatter):
                             err.code, err.text
                         ))
                 pep8_report_errs.extend(perrs)
-        if self.pylintreport:
+        if self.pep8report:
             pep8_report_errs.sort(key=lambda err: (err[0], err[1], err[2]))
             for e in pep8_report_errs:
                 print("%s:%d:%d: %s %s" % e)
@@ -179,7 +179,7 @@ class HTMLPlugin(base.BaseFormatter):
             scores.append(
                 '%s: %d' % (SEVERITY_NAMES[sev - 1], count)
             )
-        if not self.pylintreport:
+        if not self.pep8report:
             print(orig_filename, "has issues:", *scores)
 
         # Build a mapping of errors by line
@@ -298,7 +298,7 @@ class HTMLPlugin(base.BaseFormatter):
             default="flake8 violations"
         )
         options.add_option(
-            '--htmlpylint',
-            help="Whether to create a pylint report instead of the standard one",
+            '--htmlpep8',
+            help="Whether to create a pep8 report instead of the standard one",
             default=False
         )
