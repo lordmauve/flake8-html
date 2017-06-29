@@ -82,13 +82,13 @@ class HTMLPlugin(base.BaseFormatter):
         else:
             self.outdir = self.options.htmldir
 
-        if not self.options.pylintreport:
+        if not self.options.htmlpylint:
             try:
-                self.pylintreport = config.get('flake8', 'html_pylint')
+                self.pylintreport = config.get('flake8', 'htmlpylint')
             except:
                 self.pylintreport = False
         else:
-            self.pylintreport = self.options.pylintreport
+            self.pylintreport = self.options.htmlpylint
 
         if not os.path.isdir(self.outdir):
             os.mkdir(self.outdir)
@@ -298,7 +298,7 @@ class HTMLPlugin(base.BaseFormatter):
             default="flake8 violations"
         )
         options.add_option(
-            '--pylintreport',
+            '--htmlpylint',
             help="Whether to create a pylint report instead of the standard one",
             default=False
         )
