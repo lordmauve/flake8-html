@@ -157,16 +157,23 @@ class HTMLPlugin(base.BaseFormatter):
                 errs
             ))
             if self.pep8report:
+                # pep8 report - Step 1: gather errors
                 for err in errors:
                     pep8_report_errs.append(
                         (
                             err.filename, err.line_number, err.column_number,
                             err.code, err.text
-                        ))
+                        )
+                    )
+
         if self.pep8report:
+            # pep8 report - Step 2: sort gathered errors by
+            # filename, line- and column number
             pep8_report_errs.sort(key=lambda err: (err[0], err[1], err[2]))
+            # Step 3: Profit. Print the errors in pep8 report format
             for e in pep8_report_errs:
                 print("%s:%d:%d: %s %s" % e)
+
         index.sort(key=lambda r: (r[0], -r[1], r[2]))
 
         scores = []
