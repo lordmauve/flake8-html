@@ -13,7 +13,7 @@ import os.path
 import codecs
 import datetime
 import pkgutil
-import ConfigParser
+import configparser
 
 from operator import attrgetter
 from collections import namedtuple, Counter
@@ -31,7 +31,7 @@ jinja2_env = Environment(
 )
 jinja2_env.filters['sentence'] = lambda s: s[:1].upper() + s[1:]
 
-config = ConfigParser.RawConfigParser()
+config = configparser.RawConfigParser()
 config.read(['setup.cfg', 'tox.ini', '.flake8'])
 #: A sequence of error code prefixes
 #:
@@ -83,10 +83,7 @@ class HTMLPlugin(base.BaseFormatter):
             self.outdir = self.options.htmldir
 
         if not self.options.htmlpep8:
-            try:
-                self.pep8report = config.get('flake8', 'htmlpep8')
-            except:
-                self.pep8report = False
+            self.pep8report = config.get('flake8', 'htmlpep8', fallback=False)
         else:
             self.pep8report = self.options.htmlpep8
 
