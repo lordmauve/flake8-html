@@ -157,14 +157,12 @@ class HTMLPlugin(base.BaseFormatter):
                 errs
             ))
             if self.pep8report:
-                perrs = []
                 for err in errors:
-                    perrs.append(
+                    pep8_report_errs.append(
                         (
                             err.filename, err.line_number, err.column_number,
                             err.code, err.text
                         ))
-                pep8_report_errs.extend(perrs)
         if self.pep8report:
             pep8_report_errs.sort(key=lambda err: (err[0], err[1], err[2]))
             for e in pep8_report_errs:
