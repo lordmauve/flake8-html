@@ -158,7 +158,10 @@ class HTMLPlugin(base.BaseFormatter):
                 err.filename, err.line_number, err.column_number))
             # Step 3: Profit. Print the errors in pep8 report format
             for e in pep8_report_errs:
-                print("{e.filename}:{e.line_number}:{e.column_number} {e.code} {e.text}".format(e=e))
+                print((
+                    "{e.filename}:{e.line_number}:{e.column_number} "
+                    "{e.code} {e.text}"
+                ).format(e=e))
 
         index.sort(key=lambda r: (r[0], -r[1], r[2]))
 
@@ -198,8 +201,6 @@ class HTMLPlugin(base.BaseFormatter):
         rendered = self.source_template.render(**params)
         with codecs.open(source_filename, 'w', encoding='utf8') as f:
             f.write(rendered)
-        # stop() isn't called when, f.ex. called via some CI runners, so call it
-        self.stop()
 
     def get_report_filename(self, filename, suffix=''):
         """Generate a path in the output directory for the source file given.
