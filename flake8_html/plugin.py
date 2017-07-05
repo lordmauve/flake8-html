@@ -13,7 +13,6 @@ import os.path
 import codecs
 import datetime
 import pkgutil
-import configparser
 
 from operator import attrgetter
 from collections import namedtuple, Counter
@@ -31,8 +30,6 @@ jinja2_env = Environment(
 )
 jinja2_env.filters['sentence'] = lambda s: s[:1].upper() + s[1:]
 
-config = configparser.RawConfigParser()
-config.read(['setup.cfg', 'tox.ini', '.flake8'])
 #: A sequence of error code prefixes
 #:
 #: The first matching prefix determines the severity
@@ -74,18 +71,11 @@ class HTMLPlugin(base.BaseFormatter):
         """Configure the plugin run."""
         self.report_template = jinja2_env.get_template('file-report.html')
         self.source_template = jinja2_env.get_template('annotated-source.html')
-        if not self.options.htmldir:
-            try:
-                self.outdir = config.get('flake8', 'htmldir')
-            except:
-                sys.exit('--htmldir must be given if HTML output is enabled')
-        else:
-            self.outdir = self.options.htmldir
+        self.outdir = self.options.htmldir
+        if not self.outdir:
+            sys.exit('--htmldir must be given if HTML output is enabled')
 
-        if not self.options.htmlpep8:
-            self.pep8report = config.get('flake8', 'htmlpep8', fallback=False)
-        else:
-            self.pep8report = self.options.htmlpep8
+        self.pep8report = self.options.htmlpep8
 
         if not os.path.isdir(self.outdir):
             os.mkdir(self.outdir)
@@ -159,20 +149,16 @@ class HTMLPlugin(base.BaseFormatter):
             if self.pep8report:
                 # pep8 report - Step 1: gather errors
                 for err in errors:
-                    pep8_report_errs.append(
-                        (
-                            err.filename, err.line_number, err.column_number,
-                            err.code, err.text
-                        )
-                    )
+                    pep8_report_errs.append(err)
 
         if self.pep8report:
             # pep8 report - Step 2: sort gathered errors by
             # filename, line- and column number
-            pep8_report_errs.sort(key=lambda err: (err[0], err[1], err[2]))
+            pep8_report_errs.sort(key=lambda err: (
+                err.filename, err.line_number, err.column_number))
             # Step 3: Profit. Print the errors in pep8 report format
             for e in pep8_report_errs:
-                print("%s:%d:%d: %s %s" % e)
+                print("{e.filename}:{e.line_number}:{e.column_number} {e.code} {e.text}".format(e=e))
 
         index.sort(key=lambda r: (r[0], -r[1], r[2]))
 
@@ -292,15 +278,18 @@ class HTMLPlugin(base.BaseFormatter):
         cls.option_manager = options
         options.add_option(
             '--htmldir',
-            help="Directory in which to write HTML output."
+            help="Directory in which to write HTML output.",
+            parse_from_config=True
         )
         options.add_option(
             '--htmltitle',
             help="Title to display in HTML documentation",
-            default="flake8 violations"
+            default="flake8 violations",
+            parse_from_config=True
         )
         options.add_option(
             '--htmlpep8',
             help="Whether to print a pep8 report instead of the standard one",
-            default=False
+            default=False,
+            parse_from_config=True
         )
