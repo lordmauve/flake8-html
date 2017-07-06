@@ -13,6 +13,7 @@ import os.path
 import codecs
 import datetime
 import pkgutil
+
 from operator import attrgetter
 from collections import namedtuple, Counter
 
@@ -28,7 +29,6 @@ jinja2_env = Environment(
     loader=PackageLoader('flake8_html')
 )
 jinja2_env.filters['sentence'] = lambda s: s[:1].upper() + s[1:]
-
 
 #: A sequence of error code prefixes
 #:
@@ -71,9 +71,12 @@ class HTMLPlugin(base.BaseFormatter):
         """Configure the plugin run."""
         self.report_template = jinja2_env.get_template('file-report.html')
         self.source_template = jinja2_env.get_template('annotated-source.html')
-        if not self.options.htmldir:
-            sys.exit('--htmldir must be given if HTML output is enabled')
         self.outdir = self.options.htmldir
+        if not self.outdir:
+            sys.exit('--htmldir must be given if HTML output is enabled')
+
+        self.pep8report = self.options.htmlpep8
+
         if not os.path.isdir(self.outdir):
             os.mkdir(self.outdir)
         self.files = []
@@ -106,8 +109,8 @@ class HTMLPlugin(base.BaseFormatter):
 
         with open(filename, 'rb') as f:
             source = f.read()
-
-        orig_filename = filename
+        if not self.pep8report:
+            orig_filename = filename
         filename = re.sub(r'^\./', '', filename)
 
         highest_sev = min(sev for e, sev in self.errors)
@@ -121,6 +124,7 @@ class HTMLPlugin(base.BaseFormatter):
         # Build an index of errors by code/description
         index = []
         counts = Counter()
+        pep8_report_errs = []
         for code, errors in self.by_code.items():
             sev = find_severity(code)
             counts[sev] += len(errors)
@@ -142,6 +146,23 @@ class HTMLPlugin(base.BaseFormatter):
                 unique_messages > 1 or any(e[2] > 1 for e in errs),
                 errs
             ))
+            if self.pep8report:
+                # pep8 report - Step 1: gather errors
+                for err in errors:
+                    pep8_report_errs.append(err)
+
+        if self.pep8report:
+            # pep8 report - Step 2: sort gathered errors by
+            # filename, line- and column number
+            pep8_report_errs.sort(key=lambda err: (
+                err.filename, err.line_number, err.column_number))
+            # Step 3: Profit. Print the errors in pep8 report format
+            for e in pep8_report_errs:
+                print((
+                    "{e.filename}:{e.line_number}:{e.column_number} "
+                    "{e.code} {e.text}"
+                ).format(e=e))
+
         index.sort(key=lambda r: (r[0], -r[1], r[2]))
 
         scores = []
@@ -149,7 +170,8 @@ class HTMLPlugin(base.BaseFormatter):
             scores.append(
                 '%s: %d' % (SEVERITY_NAMES[sev - 1], count)
             )
-        print(orig_filename, "has issues:", *scores)
+        if not self.pep8report:
+            print(orig_filename, "has issues:", *scores)
 
         # Build a mapping of errors by line
         by_line = defaultdict(Counter)
@@ -258,9 +280,17 @@ class HTMLPlugin(base.BaseFormatter):
         options.add_option(
             '--htmldir',
             help="Directory in which to write HTML output.",
+            parse_from_config=True
         )
         options.add_option(
             '--htmltitle',
             help="Title to display in HTML documentation",
-            default="flake8 violations"
+            default="flake8 violations",
+            parse_from_config=True
+        )
+        options.add_option(
+            '--htmlpep8',
+            help="Whether to print a pep8 report instead of the standard one",
+            default=False,
+            parse_from_config=True
         )
