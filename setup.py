@@ -45,6 +45,7 @@ setup(
     keywords='flake8 html',
     classifiers=[
         'Development Status :: 4 - Beta',
+        'Framework :: Flake8',
         'Intended Audience :: Developers',
         'License :: OSI Approved :: Apache Software License',
         'Natural Language :: English',
