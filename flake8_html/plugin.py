@@ -78,7 +78,7 @@ class HTMLPlugin(base.BaseFormatter):
         self.pep8report = self.options.htmlpep8
 
         if not os.path.isdir(self.outdir):
-            os.mkdir(self.outdir)
+            os.makedirs(self.outdir)
         self.files = []
         self.error_counts = {}
         self.file_count = 0
