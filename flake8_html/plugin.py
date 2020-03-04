@@ -97,6 +97,10 @@ class HTMLPlugin(base.BaseFormatter):
 
     def finished(self, filename):
         """Write the HTML reports for filename."""
+
+        # Normalize the filename path
+        filename = os.path.normpath(filename)
+
         report_filename = self.get_report_filename(filename, suffix='.report')
         source_filename = self.get_report_filename(filename, suffix='.source')
 
