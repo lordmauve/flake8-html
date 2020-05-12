@@ -13,7 +13,8 @@ with open('HISTORY.rst') as history_file:
 requirements = [
     'jinja2>=2.9.0',
     'pygments>=2.2.0',
-    'flake8>=3.3.0'
+    'flake8>=3.3.0',
+    'importlib-metadata;python_version<"3.8"',
 ]
 
 test_requirements = [

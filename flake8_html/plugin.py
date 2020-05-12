@@ -13,6 +13,7 @@ import os.path
 import codecs
 import datetime
 import pkgutil
+import sys
 
 from operator import attrgetter
 from collections import namedtuple, Counter
@@ -23,6 +24,11 @@ from pygments.lexers import PythonLexer
 from pygments.formatters import HtmlFormatter
 from flake8.formatting import base
 from jinja2 import Environment, PackageLoader, Markup
+
+if sys.version_info >= (3, 8):
+    import importlib.metadata as importlib_metadata
+else:
+    import importlib_metadata
 
 
 jinja2_env = Environment(
@@ -66,6 +72,9 @@ IndexEntry = namedtuple(
 
 class HTMLPlugin(base.BaseFormatter):
     """A plugin for flake8 to render errors as HTML reports."""
+
+    name = 'flake8-html'
+    version = importlib_metadata.version('flake8-html')
 
     def after_init(self):
         """Configure the plugin run."""

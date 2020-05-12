@@ -49,8 +49,9 @@ def chdir(dest):
 
 def test_report(bad_sourcedir, tmpdir):
     """Test that a report on a bad file creates the expected files."""
-    with chdir(bad_sourcedir):
+    with chdir(bad_sourcedir), pytest.raises(SystemExit) as excinfo:
         main(['--exit-zero', '--format=html', '--htmldir=%s' % tmpdir, '.'])
+    assert excinfo.value.code == 0
     names = ('index.html', 'styles.css', 'bad.report.html', 'bad.source.html')
     written = os.listdir(str(tmpdir))
     for n in names:
