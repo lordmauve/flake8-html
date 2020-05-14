@@ -13,7 +13,6 @@ import os.path
 import codecs
 import datetime
 import pkgutil
-import sys
 
 from operator import attrgetter
 from collections import namedtuple, Counter
@@ -230,7 +229,7 @@ class HTMLPlugin(base.BaseFormatter):
         formatter = HtmlFormatter(nowrap=True)
         html = highlight(source, PythonLexer(), formatter)
         return {
-            'html_lines': [Markup(l) for l in html.splitlines()],
+            'html_lines': [Markup(ln) for ln in html.splitlines()],
             'css': formatter.get_style_defs()
         }
 
