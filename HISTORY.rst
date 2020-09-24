@@ -2,6 +2,12 @@
 History
 =======
 
+unreleased
+----------
+
+* Update supported Python versions.
+
+
 0.4.1 (2020-05-13)
 ------------------
 
