@@ -6,8 +6,8 @@ __email__ = 'mauve@mauveweb.co.uk'
 __version__ = '0.4.1'
 
 
-from .plugin import HTMLPlugin
+from .plugin import HTMLPlugin, find_severity
 
 __all__ = (
-    'HTMLPlugin',
+    'HTMLPlugin', 'find_severity'
 )
