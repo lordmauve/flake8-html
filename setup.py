@@ -11,7 +11,7 @@ with open('HISTORY.rst') as history_file:
     history = history_file.read()
 
 requirements = [
-    'jinja2>=2.9.0',
+    'jinja2>=3.1.0',
     'pygments>=2.2.0',
     'flake8>=3.3.0',
     'importlib-metadata;python_version<"3.8"',

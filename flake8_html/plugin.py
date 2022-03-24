@@ -22,7 +22,8 @@ from collections import defaultdict
 from pygments.lexers import PythonLexer
 from pygments.formatters import HtmlFormatter
 from flake8.formatting import base
-from jinja2 import Environment, PackageLoader, Markup
+from jinja2 import Environment, PackageLoader
+from markupsafe import Markup
 
 if sys.version_info >= (3, 8):
     import importlib.metadata as importlib_metadata
