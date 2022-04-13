@@ -1,0 +1,7 @@
+pip-tools
+bumpversion
+wheel
+watchdog
+tox
+coverage
+pytest
