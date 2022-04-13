@@ -2,10 +2,10 @@
 History
 =======
 
-unreleased
-----------
+0.4.2 (2022-04-13)
+------------------
 
-* Update supported Python versions.
+* Fix compatibility with Python 3.9+
 
 
 0.4.1 (2020-05-13)

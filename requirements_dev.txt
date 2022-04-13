@@ -7,8 +7,6 @@
 attrs==21.4.0
     # via pytest
 bump2version==1.0.1
-    # via bumpversion
-bumpversion==0.6.0
     # via -r requirements_dev.in
 click==8.1.2
     # via pip-tools
