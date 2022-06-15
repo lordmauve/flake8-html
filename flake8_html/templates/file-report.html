@@ -1,79 +1,11 @@
-<!DOCTYPE html>
-<html>
-   <head>
-      <title>flake8 violations: {{ filename }}</title>
-      <meta http-equiv="Content-Type" value="text/html; charset=UTF-8">
-      <link rel="stylesheet" href="styles.css">
-<script>
-function bindHandler(link) {
-   var code = link.getAttribute('data-code');
-   var key = location.pathname + '#' + code;
+{% extends "base.html" %}
 
-   var ul = link.parentNode.querySelector('.details');
-   if (sessionStorage[key] != 'open') {
-      ul.style.display = 'none';
-   }
-   link.addEventListener('click', function (event) {
-      if (!ul.style.display || ul.style.display == 'none') {
-         ul.style.display = 'block';
-         sessionStorage[key] = 'open';
-      } else {
-         ul.style.display = 'none';
-         sessionStorage[key] = 'closed';
-      }
-   });
-}
+{% block title %}flake8 violations: {{ filename }}{% endblock %}
 
-window.addEventListener('DOMContentLoaded', function () {
-   var links = document.querySelectorAll('#index > li > a');
-   for (var i = 0; i < links.length; i++) {
-      bindHandler(links[i]);
-   }
-});
-</script>
-   </head>
-   <body>
-      <div id="masthead" class="sev-{{ highest_sev }}"></div>
-      <div id="page">
-         <p id="srclink">
-            <a title="View full annotated source"
-               href="{{ source_filename }}">
-               <img src="file.svg" alt="&#x2261;">
-            </a></p>
-         <h1>
-            <a href="index.html">
-               <img src="back.svg" alt="&#x2B05;">
-               {{ filename }}
-            </a>
-         </h1>
+{% block script %}
+<script>{% include "bind-handler.js" %}</script>
+{% endblock %}
 
-         <ul id="index">
-         {% for sev, count, code, text, line, msg_count, expand, errs in index %}
-         <li>
-            <a data-code="{{ code }}">
-               <span class="count sev-{{ sev }}">
-                  {{ count }}
-               </span>
-               <strong>{{ code }}:</strong> {{ text }}
-               {% if msg_count > 1 %}
-                  (and {{ msg_count - 1 }} similar)
-               {% endif %}
-            </a>
-            <ul class="details">
-            {% for lineno, etext, count in errs -%}
-            <li>
-               {% if expand %}
-               <p>{{etext|sentence}}{% if count > 1 %} (in {{ count }} places){% endif %}:</p>
-               {% endif %}
-               <a href="{{ source_filename }}#l{{ lineno }}">
-                  <tt><i>{{lineno}}</i> {{ html_lines[lineno - 1] or '&nbsp;'|safe }}</tt>
-               </a>
-            </li>
-            {%- endfor %}
-            </ul>
-         </li>
-         {% endfor %}
-         </ul>
-      </div>
-   </body>
-</html>
+{% block content %}
+{% include "file-report-content.html" %}
+{% endblock %}

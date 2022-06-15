@@ -9,6 +9,7 @@ html {
    top: 0;
    right: 0;
    height: 40%;
+   z-index: -1;
 }
 
 h1, h2 {
@@ -38,7 +39,7 @@ h1 a {
    color: rgba(255, 255, 255, 0.7);
 }
 
-#page {
+.page {
    position: relative;
    max-width: 960px;
    margin: 0 auto;

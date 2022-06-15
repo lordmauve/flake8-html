@@ -13,6 +13,10 @@ import os.path
 import codecs
 import datetime
 import pkgutil
+try:
+    from urllib.parse import quote
+except ImportError:
+    from urllib import quote
 
 from operator import attrgetter
 from collections import namedtuple, Counter
@@ -66,7 +70,7 @@ def find_severity(code):
 
 IndexEntry = namedtuple(
     'IndexEntry',
-    'filename report_name error_count highest_sev'
+    'filename filename_url_safe report_name error_count highest_sev report_rendered source_rendered'
 )
 
 
@@ -80,6 +84,11 @@ class HTMLPlugin(base.BaseFormatter):
         """Configure the plugin run."""
         self.report_template = jinja2_env.get_template('file-report.html')
         self.source_template = jinja2_env.get_template('annotated-source.html')
+        self.report_content_template = jinja2_env.get_template('file-report-content.html')
+        self.source_content_template = jinja2_env.get_template('annotated-source-content.html')
+        self.file_svg_data = quote(pkgutil.get_data('flake8_html', 'images/file.svg'))
+        self.back_svg_data = quote(pkgutil.get_data('flake8_html', 'images/back.svg'))
+        self.self_contained = self.options.self_contained_html
         self.outdir = self.options.htmldir
         if not self.outdir:
             sys.exit('--htmldir must be given if HTML output is enabled')
@@ -127,12 +136,6 @@ class HTMLPlugin(base.BaseFormatter):
         filename = re.sub(r'^\./', '', filename)
 
         highest_sev = min(sev for e, sev in self.errors)
-        self.files.append(IndexEntry(
-            filename=filename,
-            report_name=os.path.basename(report_filename),
-            error_count=len(self.errors),
-            highest_sev=highest_sev
-        ))
 
         # Build an index of errors by code/description
         index = []
@@ -200,6 +203,7 @@ class HTMLPlugin(base.BaseFormatter):
         params = self._format_source(source)
         params.update(
             filename=filename,
+            filename_url_safe=quote(filename),
             report_filename=os.path.basename(report_filename),
             source_filename=os.path.basename(source_filename),
             errors=by_line,
@@ -207,13 +211,27 @@ class HTMLPlugin(base.BaseFormatter):
             highest_sev=highest_sev,
             index=index,
             title=self.options.htmltitle,
+            self_contained=self.self_contained,
+            file_svg_data=self.file_svg_data,
+            back_svg_data=self.back_svg_data
         )
-        rendered = self.report_template.render(**params)
-        with codecs.open(report_filename, 'w', encoding='utf8') as f:
-            f.write(rendered)
-        rendered = self.source_template.render(**params)
-        with codecs.open(source_filename, 'w', encoding='utf8') as f:
-            f.write(rendered)
+        if not self.self_contained:
+            rendered = self.report_template.render(**params)
+            with codecs.open(report_filename, 'w', encoding='utf8') as f:
+                f.write(rendered)
+            rendered = self.source_template.render(**params)
+            with codecs.open(source_filename, 'w', encoding='utf8') as f:
+                f.write(rendered)
+
+        self.files.append(IndexEntry(
+            filename=filename,
+            filename_url_safe=quote(filename),
+            report_name=os.path.basename(report_filename),
+            error_count=len(self.errors),
+            highest_sev=highest_sev,
+            report_rendered=self.report_content_template.render(**params) if self.self_contained else None,
+            source_rendered=self.source_content_template.render(**params) if self.self_contained else None
+        ))
 
     def get_report_filename(self, filename, suffix=''):
         """Generate a path in the output directory for the source file given.
@@ -238,10 +256,19 @@ class HTMLPlugin(base.BaseFormatter):
             'css': formatter.get_style_defs()
         }
 
+    def _render_css(self):
+        formatter = HtmlFormatter(nowrap=True)
+        tmpl = jinja2_env.get_template('styles.css')
+
+        return tmpl.render(
+            pygments_css=formatter.get_style_defs()
+        )
+
     def stop(self):
         """After the flake8 run, write the stylesheet and index."""
-        self.write_styles()
-        self.write_images()
+        if not self.self_contained:
+            self.write_styles()
+            self.write_images()
         self.write_index()
 
     def write_images(self):
@@ -254,16 +281,9 @@ class HTMLPlugin(base.BaseFormatter):
 
     def write_styles(self):
         """Write the stylesheet."""
-        formatter = HtmlFormatter(nowrap=True)
-        tmpl = jinja2_env.get_template('styles.css')
-
-        rendered = tmpl.render(
-            pygments_css=formatter.get_style_defs()
-        )
-
         stylesheet = os.path.join(self.outdir, 'styles.css')
         with codecs.open(stylesheet, 'w', encoding='utf8') as f:
-            f.write(rendered)
+            f.write(self._render_css())
 
     def write_index(self):
         """Write the index file."""
@@ -281,6 +301,8 @@ class HTMLPlugin(base.BaseFormatter):
             versions=self.option_manager.generate_versions(),
             highest_sev=highest_sev,
             title=self.options.htmltitle,
+            self_contained=self.self_contained,
+            rendered_css=self._render_css()
         )
         indexfile = os.path.join(self.outdir, 'index.html')
         with codecs.open(indexfile, 'w', encoding='utf8') as f:
@@ -305,5 +327,11 @@ class HTMLPlugin(base.BaseFormatter):
             '--htmlpep8',
             help="Whether to print a pep8 report instead of the standard one",
             default=False,
+            parse_from_config=True
+        )
+        options.add_option(
+            '--self-contained-html',
+            help="Create a self-contained html file containing all "
+                 "necessary styles, scripts, and images",
             parse_from_config=True
         )

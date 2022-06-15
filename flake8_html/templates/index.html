@@ -1,39 +1,55 @@
-<!DOCTYPE html>
-<html>
-   <head>
-      <title>{{ title }}</title>
-      <meta http-equiv="Content-Type" value="text/html; charset=UTF-8">
-      <link rel="stylesheet" href="styles.css">
-   </head>
-   <body>
-      <div id="masthead" class="sev-{{ highest_sev }}"></div>
-      <div id="page">
-          <h1>{{ title }}</h1>
-         <p id="versions">Generated on {{ now.strftime('%Y-%m-%d %H:%M') }}
-            with {{ versions }}
-         </p>
-         <ul id="index">
-         {% for e in index %}
-         <li>
+{% extends "base.html" %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block script %}
+    {% if self_contained %}
+        <script>{% include "bind-handler.js" %}</script>
+        <script>{% include "self-contained.js" %}</script>
+    {% endif %}
+{% endblock %}
+
+{% block content %}
+
+<div id="index-page" class="page">
+    <h1>{{ title }}</h1>
+    <p id="versions">Generated on {{ now.strftime('%Y-%m-%d %H:%M') }}
+        with {{ versions }}
+    </p>
+    <ul id="index">
+        {% for e in index %}
+        <li>
+            {% if self_contained %}
+            <a href="#" onclick="switchToPage('{{ e.filename_url_safe }}', {{ e.highest_sev }})">
+            {% else %}
             <a href="{{ e.report_name }}">
-               <span class="count sev-{{ e.highest_sev }}">
+            {% endif %}
+                <span class="count sev-{{ e.highest_sev }}">
                   {{ e.error_count }}
-               </span>
-               {{ e.filename }}
+                </span>
+                {{ e.filename }}
             </a>
-         </li>
-         {% else %}
-         <li>
+        </li>
+        {% else %}
+        <li>
             <div id="all-good">
                <span class="count sev-4">
                   <span class="tick">&#x2713;</span>
                </span>
-               <h2>All good!</h2>
-               <p>No flake8 errors found in {{ file_count }} files scanned.</p>
+                <h2>All good!</h2>
+                <p>No flake8 errors found in {{ file_count }} files scanned.</p>
             </div>
-         </li>
-         {% endfor %}
-         </ul>
-      </div>
-   </body>
-</html>
+        </li>
+        {% endfor %}
+    </ul>
+</div>
+
+{% if self_contained %}
+    {% for e in index %}
+        {{ e.report_rendered }}
+        {{ e.source_rendered }}
+    {% endfor %}
+{% endif %}
+
+{% endblock %}
+

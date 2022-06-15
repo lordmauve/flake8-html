@@ -1,0 +1,37 @@
+<div id="source-{{ filename_url_safe }}" class="source page">
+    <h1>
+        {% if self_contained %}
+        <a href="#" onclick="switchToPage('{{ filename_url_safe }}', {{ highest_sev }})">
+        {% else %}
+        <a href="{{ report_filename }}">
+        {% endif %}
+            <img src="{{ 'data:image/svg+xml;utf-8,'+back_svg_data if self_contained else 'back.svg' }}"
+                 alt="&#x2B05;">
+            {{filename}} source
+        </a>
+    </h1>
+
+    <div id="doc">
+        {% for line in html_lines -%}
+        {%- set line_errors = errors[loop.index] -%}
+        {%- set line_sev = line_sevs[loop.index] -%}
+        <div id="l{{ loop.index }}"
+             class="code sev-{{ line_sev }} {% if line_errors %} le{% endif %}">
+            {%- if line_errors %}
+            <ul class="violations">
+                {% for (sev, code, text), count in line_errors.items() %}
+                <li>
+                    <span class="count sev-{{ sev }}">
+                       {{ code }}
+                    </span>
+                    {{ text|sentence }}
+                    {%- if count > 1 %} (in {{ count }} places){% endif -%}
+                </li>
+                {% endfor %}
+            </ul>
+            {%- endif -%}
+            <tt><i>{{loop.index}}</i> {{ line or '&nbsp;'|safe }}</tt>
+        </div>
+        {% endfor %}
+    </div>
+</div>

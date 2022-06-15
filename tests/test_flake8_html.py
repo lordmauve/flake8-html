@@ -56,3 +56,14 @@ def test_report(bad_sourcedir, tmpdir):
     written = os.listdir(str(tmpdir))
     for n in names:
         assert n in written, "File %s not written" % n
+
+
+def test_self_contained_report(bad_sourcedir, tmpdir):
+    """Test that a report on a bad file creates self-contained file."""
+    with chdir(bad_sourcedir), pytest.raises(SystemExit) as excinfo:
+        main(['--exit-zero', '--format=html', '--htmldir=%s' % tmpdir, '--self-contained-html', '.'])
+    assert excinfo.value.code == 0
+    names = ('index.html', )
+    written = os.listdir(str(tmpdir))
+    for n in names:
+        assert n in written, "File %s not written" % n
