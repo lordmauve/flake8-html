@@ -333,5 +333,7 @@ class HTMLPlugin(base.BaseFormatter):
             '--self-contained-html',
             help="Create a self-contained html file containing all "
                  "necessary styles, scripts, and images",
-            parse_from_config=True
+            default=False,
+            parse_from_config=True,
+            action='store_true'
         )

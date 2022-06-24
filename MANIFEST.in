@@ -5,7 +5,7 @@ include HISTORY.rst
 include LICENSE
 include README.rst
 
-recursive-include flake8_html/templates *.html *.css
+recursive-include flake8_html/templates *.html *.css *.js
 recursive-include flake8_html/images *.svg
 
 recursive-include tests *
