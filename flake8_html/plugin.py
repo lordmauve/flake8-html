@@ -17,6 +17,7 @@ import pkgutil
 from operator import attrgetter
 from collections import namedtuple, Counter
 
+import flake8
 from pygments import highlight
 from collections import defaultdict
 from pygments.lexers import PythonLexer
@@ -278,13 +279,22 @@ class HTMLPlugin(base.BaseFormatter):
                 key=lambda e: (e.highest_sev, -e.error_count)
             ),
             now=datetime.datetime.now(),
-            versions=self.option_manager.generate_versions(),
+            versions=self._get_plugin_version_summary(),
             highest_sev=highest_sev,
             title=self.options.htmltitle,
         )
         indexfile = os.path.join(self.outdir, 'index.html')
         with codecs.open(indexfile, 'w', encoding='utf8') as f:
             f.write(rendered)
+
+    def _get_plugin_version_summary(self):
+        option_manager = self.option_manager
+        if flake8.__version_info__ < (5, 0, 0):
+            return option_manager.generate_versions()
+        else:
+            # Below return info prefixed with "Installed with:". This is different from
+            # option_manager.generate_versions() but using this as it is a cleaner way
+            return option_manager.parser.epilog
 
     @classmethod
     def add_options(cls, options):
