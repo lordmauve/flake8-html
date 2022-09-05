@@ -7,6 +7,7 @@ import tempfile
 import shutil
 import contextlib
 
+import flake8
 import pytest
 from flake8.main.cli import main
 
@@ -50,7 +51,10 @@ def chdir(dest):
 def test_report(bad_sourcedir, tmpdir):
     """Test that a report on a bad file creates the expected files."""
     with chdir(bad_sourcedir), pytest.raises(SystemExit) as excinfo:
-        main(['--exit-zero', '--format=html', '--htmldir=%s' % tmpdir, '.'])
+        code = main(['--exit-zero', '--format=html', '--htmldir=%s' % tmpdir, '.'])
+        # earlier flake8 version were raising the SystemExit, now raise it explicitly to cover recent versions too
+        if flake8.__version_info__ >= (5, 0, 0):
+            raise SystemExit(code)
     assert excinfo.value.code == 0
     names = ('index.html', 'styles.css', 'bad.report.html', 'bad.source.html')
     written = os.listdir(str(tmpdir))
