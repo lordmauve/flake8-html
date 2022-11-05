@@ -58,7 +58,7 @@ virtualenv==20.14.1
     # via tox
 watchdog==2.1.7
     # via -r requirements_dev.in
-wheel==0.37.1
+wheel==0.38.2
     # via
     #   -r requirements_dev.in
     #   pip-tools
