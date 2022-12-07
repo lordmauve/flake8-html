@@ -1,43 +1,7 @@
-<!DOCTYPE html>
-<html>
-   <head>
-      <title>{{ filename }} - flake8 annotated source</title>
-      <meta http-equiv="Content-Type" value="text/html; charset=UTF-8">
-      <link rel="stylesheet" href="styles.css">
-   </head>
-   <body>
-      <div id="masthead" class="sev-{{ highest_sev }}"></div>
-      <div id="page">
-         <h1>
-            <a href="{{ report_filename }}">
-               <img src="back.svg" alt="&#x2B05;">
-               {{filename}} source
-            </a>
-         </h1>
+{% extends "base.html" %}
 
-         <div id="doc">
-            {% for line in html_lines -%}
-            {%- set line_errors = errors[loop.index] -%}
-            {%- set line_sev = line_sevs[loop.index] -%}
-            <div id="l{{ loop.index }}"
-               class="code sev-{{ line_sev }} {% if line_errors %} le{% endif %}">
-               {%- if line_errors %}
-               <ul class="violations">
-               {% for (sev, code, text), count in line_errors.items() %}
-                  <li>
-                     <span class="count sev-{{ sev }}">
-                        {{ code }}
-                     </span>
-                     {{ text|sentence }}
-                     {%- if count > 1 %} (in {{ count }} places){% endif -%}
-                  </li>
-               {% endfor %}
-               </ul>
-               {%- endif -%}
-               <tt><i>{{loop.index}}</i> {{ line or '&nbsp;'|safe }}</tt>
-            </div>
-            {% endfor %}
-         </div>
-      </div>
-   </body>
-</html>
+{% block title %}{{ filename }} - flake8 annotated source{% endblock %}
+
+{% block content %}
+{% include "annotated-source-content.html" %}
+{% endblock %}

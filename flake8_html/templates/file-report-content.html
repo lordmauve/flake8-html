@@ -1,0 +1,53 @@
+<div id="{{ filename_url_safe }}" class="file-report page">
+    <p id="srclink">
+        {% if self_contained %}
+        <a title="View full annotated source"
+           href="#" onclick="switchToPage('source-{{ filename_url_safe }}', {{ highest_sev }})">
+        {% else %}
+        <a title="View full annotated source"
+           href="{{ source_filename }}">
+        {% endif %}
+            <img src="{{ 'data:image/svg+xml;utf-8,'+file_svg_data if self_contained else 'file.svg' }}"
+                 alt="&#x2261;">
+        </a>
+    </p>
+    <h1>
+        {% if self_contained %}
+        <a href="#" onclick="switchToPage('index-page')">
+        {% else %}
+        <a href="index.html">
+        {% endif %}
+            <img src="{{ 'data:image/svg+xml;utf-8,'+back_svg_data if self_contained else 'back.svg' }}"
+                 alt="&#x2B05;">
+            {{ filename }}
+        </a>
+    </h1>
+
+    <ul id="index">
+        {% for sev, count, code, text, line, msg_count, expand, errs in index %}
+        <li>
+            <a data-code="{{ code }}">
+                <span class="count sev-{{ sev }}">
+                   {{ count }}
+                </span>
+                <strong>{{ code }}:</strong> {{ text }}
+                {% if msg_count > 1 %}
+                (and {{ msg_count - 1 }} similar)
+                {% endif %}
+            </a>
+            <ul class="details">
+                {% for lineno, etext, count in errs -%}
+                <li>
+                    {% if expand %}
+                    <p>{{etext|sentence}}{% if count > 1 %} (in {{ count }} places){% endif %}:</p>
+                    {% endif %}
+                    <a href="{{ source_filename }}#l{{ lineno }}">
+                        <tt><i>{{lineno}}</i> {{ html_lines[lineno - 1] or '&nbsp;'|safe }}</tt>
+                    </a>
+                </li>
+                {%- endfor %}
+            </ul>
+        </li>
+        {% endfor %}
+    </ul>
+</div>
