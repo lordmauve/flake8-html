@@ -54,7 +54,7 @@ tomli==2.0.1
     #   pytest
 tox==3.25.0
     # via -r requirements_dev.in
-virtualenv==20.14.1
+virtualenv==20.26.3
     # via tox
 watchdog==2.1.7
     # via -r requirements_dev.in
